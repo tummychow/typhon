@@ -1,5 +1,13 @@
 ---
 - hosts: all
   remote_user: root
+  vars:
+    nginx_sites:
+      - server:
+          file_name: default
+          server_name: "_"
+          listen: 80
+          return: 444
   roles:
   - role: base
+  - role: nginx

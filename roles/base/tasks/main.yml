@@ -1,0 +1,24 @@
+---
+- name: create timezone symlink
+  file:
+    src: "/usr/share/zoneinfo/{{ timezone }}"
+    dest: /etc/localtime
+    state: link
+    owner: root
+    group: root
+    mode: "0644"
+    force: true
+
+- name: synchronize hardware clock
+  command: hwclock --systohc --utc
+
+- name: install ntpd
+  pacman:
+    name: ntp
+    state: present
+
+- name: start and enable ntpd
+  service:
+    name: ntpd
+    state: started
+    enabled: true

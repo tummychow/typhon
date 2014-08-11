@@ -1,4 +1,14 @@
 ---
+- name: generate locales
+  locale_gen: # doesn't work on Arch due to spaces in locale.gen
+    name: "{{ locale }}"
+    state: present
+
+- name: update locale.conf
+  template:
+    src: locale.conf.j2
+    dest: /etc/locale.conf
+
 - name: create timezone symlink
   file:
     src: "/usr/share/zoneinfo/{{ timezone }}"

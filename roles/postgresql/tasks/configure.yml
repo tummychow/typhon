@@ -1,0 +1,26 @@
+---
+- name: update pg_hba.conf
+  template:
+    src: pg_hba.conf.j2
+    dest: "{{ postgresql_data_directory }}/pg_hba.conf"
+    owner: "{{ postgresql_admin_user }}"
+    group: "{{ postgresql_admin_user }}"
+    mode: "0640"
+  notify: postgresql.restart
+
+- name: update postgresql.conf
+  template:
+    src: postgresql.conf.j2
+    dest: "{{ postgresql_data_directory }}/postgresql.conf"
+    owner: "{{ postgresql_admin_user }}"
+    group: "{{ postgresql_admin_user }}"
+    mode: "0640"
+  notify: postgresql.restart
+
+- name: create folder for additional configuration
+  file:
+    path: "{{ postgresql_data_directory }}/conf.d"
+    owner: "{{ postgresql_admin_user }}"
+    group: "{{ postgresql_admin_user }}"
+    state: directory
+    mode: "0755"

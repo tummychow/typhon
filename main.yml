@@ -11,3 +11,4 @@
   roles:
   - role: base
   - role: nginx
+  - role: postgresql

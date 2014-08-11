@@ -1,0 +1,20 @@
+---
+- name: stop
+  service:
+    name: postgresql
+    state: stopped
+
+- name: create data directory
+  file:
+    path: "{{ postgresql_data_directory }}"
+    owner: "{{ postgresql_admin_user }}"
+    group: "{{ postgresql_admin_user }}"
+    state: directory
+    mode: "0700"
+
+- name: create database cluster
+  command: "initdb --locale {{ postgresql_locale }} -E {{ postgresql_encoding }} -D {{ postgresql_data_directory }}"
+  args:
+    creates: "{{ postgresql_data_directory }}/PG_VERSION"
+  sudo: true
+  sudo_user: "{{ postgresql_admin_user }}"

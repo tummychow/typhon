@@ -1,0 +1,31 @@
+---
+- name: start
+  service:
+    name: postgresql
+    state: started
+
+- name: create databases
+  postgresql_db:
+    name: "{{ item.name }}"
+    owner: "{{ item.owner | default('') }}"
+    encoding: "{{ postgresql_encoding }}"
+    lc_collate: "{{ postgresql_locale }}"
+    lc_ctype: "{{ postgresql_locale }}"
+    template: template0
+    state: present
+  with_items: postgresql_databases
+  when: postgresql_databases|length > 0
+
+- name: add hstore to specified databases
+  sudo: true
+  sudo_user: "{{ postgresql_admin_user }}"
+  shell: "psql {{ item.name }} -c 'CREATE EXTENSION IF NOT EXISTS hstore;'"
+  with_items: postgresql_databases
+  when: item.hstore is defined and item.hstore
+
+- name: add uuid-ossp to specified databases
+  sudo: true
+  sudo_user: "{{ postgresql_admin_user }}"
+  shell: "psql {{ item.name }} -c 'CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";'"
+  with_items: postgresql_databases
+  when: item.uuid_ossp is defined and item.uuid_ossp

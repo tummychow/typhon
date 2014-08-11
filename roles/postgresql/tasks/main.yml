@@ -1,0 +1,12 @@
+---
+- include: install.yml
+- include: cluster.yml
+- include: configure.yml
+- include: users.yml
+- include: databases.yml
+
+- name: start and enable
+  service:
+    name: postgresql
+    state: started
+    enabled: true

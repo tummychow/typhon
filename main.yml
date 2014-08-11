@@ -2,13 +2,37 @@
 - hosts: all
   remote_user: root
   vars:
+    redmine:
+      database: redmine_db
+      name: redminer
+      pass: redminer
+      dir: /var
+      fulldir: /var/redmine-2.5.2
+    postgresql_users:
+      - name: "{{ redmine.name }}"
+        pass: "{{ redmine.pass }}"
+    postgresql_databases:
+      - name: "{{ redmine.database }}"
+        owner: "{{ redmine.name }}"
     nginx_sites:
       - server:
           file_name: default
           server_name: "_"
           listen: 80
           return: 444
+      - server:
+          file_name: redmine
+          server_name: redmine.example.com
+          listen: 80
+          root: "{{ redmine.fulldir }}/public"
+          location1:
+            name: /
+            try_files: $uri $uri/index.html @passenger
+          location2:
+            name: "@passenger"
+            passenger_enabled: "on"
   roles:
   - role: base
   - role: nginx
   - role: postgresql
+  - role: redmine

@@ -1,0 +1,70 @@
+---
+- name: unpack
+  unarchive:
+    src: redmine-2.5.2.tar.gz
+    dest: "{{ redmine.dir }}"
+    creates: "{{ redmine.fulldir }}"
+
+- name: set permissions
+  file:
+    path: "{{ redmine.fulldir }}"
+    state: directory
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_user }}"
+    recurse: true
+
+- name: update database.yml
+  template:
+    src: database.yml.j2
+    dest: "{{ redmine.fulldir }}/config/database.yml"
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_user }}"
+    mode: "0640"
+
+- name: copy Gemfile.lock
+  copy:
+    src: Gemfile.lock
+    dest: "{{ redmine.fulldir }}"
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_user }}"
+    mode: "0640"
+
+- name: install bundle
+  command: bundle install --deployment --without development test rmagick
+  args:
+    chdir: "{{ redmine.fulldir }}"
+    creates: "{{ redmine.fulldir }}/vendor/bundle"
+  sudo: true
+  sudo_user: "{{ nginx_user }}"
+
+- name: generate secret token for sessions
+  command: bundle exec rake generate_secret_token
+  args:
+    chdir: "{{ redmine.fulldir }}"
+    creates: "{{ redmine.fulldir }}/config/initializers/secret_token.rb"
+  sudo: true
+  sudo_user: "{{ nginx_user }}"
+
+# rails migrations are (supposed to be) idempotent
+- name: migrate database schema
+  command: bundle exec rake db:migrate
+  environment:
+    RAILS_ENV: production
+  args:
+    chdir: "{{ redmine.fulldir }}"
+  sudo: true
+  sudo_user: "{{ nginx_user }}"
+
+# can tell if it worked based on the stdout
+- name: load default data
+  command: bundle exec rake redmine:load_default_data
+  environment:
+    RAILS_ENV: production
+    REDMINE_LANG: en
+  args:
+    chdir: "{{ redmine.fulldir }}"
+  sudo: true
+  sudo_user: "{{ nginx_user }}"
+  register: redmine_load_defaults
+  failed_when: "redmine_load_defaults.stdout != 'Some configuration data is already loaded.' and redmine_load_defaults.stdout != 'Default configuration data loaded.'"
+  changed_when: "redmine_load_defaults.stdout != 'Some configuration data is already loaded.'"

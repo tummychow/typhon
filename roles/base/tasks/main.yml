@@ -32,3 +32,14 @@
     name: ntpd
     state: started
     enabled: true
+
+- name: install ruby
+  pacman:
+    name: ruby
+    state: present
+
+- name: install bundler
+  gem:
+    name: bundler
+    state: latest
+    user_install: false

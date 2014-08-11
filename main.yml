@@ -8,6 +8,8 @@
       pass: redminer
       dir: /var
       fulldir: /var/redmine-2.5.2
+    gollum:
+      fulldir: /var/gollum
     postgresql_users:
       - name: "{{ redmine.name }}"
         pass: "{{ redmine.pass }}"
@@ -31,8 +33,21 @@
           location2:
             name: "@passenger"
             passenger_enabled: "on"
+      - server:
+          file_name: gollum
+          server_name: gollum.example.com
+          listen: 80
+          root: "{{ gollum.fulldir }}/public"
+          location1:
+            name: /
+            root: "{{ gollum.fulldir }}/vendor/bundle/ruby/2.1.0/gems/gollum-3.0.0/lib/gollum/public/gollum/"
+            try_files: $uri $uri/index.html @passenger
+          location2:
+            name: "@passenger"
+            passenger_enabled: "on"
   roles:
   - role: base
   - role: nginx
   - role: postgresql
   - role: redmine
+  - role: gollum

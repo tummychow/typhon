@@ -1,0 +1,50 @@
+---
+# nokogiri uses its own libxml2/libxslt, so they are not required
+- name: install non-ruby dependencies
+  pacman:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - icu # charlock_holmes
+    - git # grit
+
+- name: create directories
+  file:
+    path: "{{ item }}"
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_user }}"
+    state: directory
+    mode: "0755"
+  with_items:
+    - "{{ gollum.fulldir }}" # have to create this first, to set its owner/group
+    - "{{ gollum.fulldir }}/public"
+    - "{{ gollum.fulldir }}/tmp"
+    - "{{ gollum.fulldir }}/repo"
+
+- name: copy configuration
+  copy:
+    src: "{{ item }}"
+    dest: "{{ gollum.fulldir }}/{{ item }}"
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_user }}"
+    mode: "0640"
+  with_items:
+    - Gemfile
+    - Gemfile.lock
+    - config.ru
+
+- name: initialize git repository
+  command: git init
+  args:
+    chdir: "{{ gollum.fulldir }}/repo"
+    creates: "{{ gollum.fulldir }}/repo/.git"
+  sudo: true
+  sudo_user: "{{ nginx_user }}"
+
+- name: install bundle
+  command: bundle install --deployment
+  args:
+    chdir: "{{ gollum.fulldir }}"
+    creates: "{{ gollum.fulldir }}/vendor/bundle"
+  sudo: true
+  sudo_user: "{{ nginx_user }}"

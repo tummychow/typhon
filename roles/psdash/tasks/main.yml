@@ -1,0 +1,48 @@
+---
+- name: unpack
+  unarchive:
+    src: v0.4.0.tar.gz
+    dest: "{{ psdash.dir }}"
+    creates: "{{ psdash.fulldir }}"
+
+- name: set permissions
+  file:
+    path: "{{ psdash.fulldir }}"
+    state: directory
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_user }}"
+    recurse: true
+
+- name: create directories
+  file:
+    path: "{{ item }}"
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_user }}"
+    state: directory
+    mode: "0755"
+  with_items:
+    - "{{ psdash.fulldir }}/public"
+    - "{{ psdash.fulldir }}/tmp"
+
+- name: copy passenger_wsgi.py
+  copy:
+    src: passenger_wsgi.py
+    dest: "{{ psdash.fulldir }}"
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_user }}"
+    mode: "0640"
+
+- name: create virtualenv
+  command: "virtualenv2 {{ psdash.fulldir }}"
+  args:
+    creates: "{{ psdash.fulldir }}/bin/python2"
+  sudo: true
+  sudo_user: "{{ nginx_user }}"
+
+- name: install env
+  command: "bin/python2 setup.py install"
+  args:
+    creates: "{{ psdash.fulldir }}/lib/python2.7/site-packages/psdash-0.4.0-py2.7.egg"
+    chdir: "{{ psdash.fulldir }}"
+  sudo: true
+  sudo_user: "{{ nginx_user }}"

@@ -10,6 +10,9 @@
       fulldir: /var/redmine-2.5.2
     gollum:
       fulldir: /var/gollum
+    psdash:
+      dir: /var
+      fulldir: /var/psdash-0.4.0
     postgresql_users:
       - name: "{{ redmine.name }}"
         pass: "{{ redmine.pass }}"
@@ -45,9 +48,23 @@
           location2:
             name: "@passenger"
             passenger_enabled: "on"
+      - server:
+          file_name: psdash
+          server_name: psdash.example.com
+          listen: 80
+          root: "{{ psdash.fulldir }}/public"
+          location1:
+            name: /
+            root: "{{ psdash.fulldir }}/psdash/static"
+            try_files: $uri $uri/index.html @passenger
+          location2:
+            name: "@passenger"
+            passenger_python: "{{ psdash.fulldir }}/bin/python2"
+            passenger_enabled: "on"
   roles:
   - role: base
   - role: nginx
   - role: postgresql
   - role: redmine
   - role: gollum
+  - role: psdash

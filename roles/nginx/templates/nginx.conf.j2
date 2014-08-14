@@ -12,7 +12,7 @@
 {{ '    ' * indent }}{{ k }} {{ v|trim }};
 {% elif v is mapping -%}
 {{ '    ' * indent }}{{ k }} {{ v['_name']|d('') }} {{ '{' }}
-{{ nginx_subconf(v, indent+1) }}
+{{ nginx_subconf(v, indent+1) -}}
 {{ '    ' * indent }}{{ '}' }}
 {% elif v is sequence -%}
 {%- for e in v -%}

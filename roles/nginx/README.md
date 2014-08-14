@@ -50,22 +50,17 @@ http  {
     server foo {
         root /var/foo;
         server_name foo.example.com;
-
     }
     server bar {
         location / {
             root /var/bar;
             try_files $uri $uri/index.html @passenger;
-
         }
         location @passenger {
             passenger_enabled on;
-
         }
         server_name bar.example.com;
-
     }
-
 }
 user http;
 ```
@@ -78,7 +73,7 @@ Essentially my template transforms arbitrary YAML into nginx configuration. The 
 
 - you can use `on` and `off` in YAML without quotes. The template will detect any instances of the python `True` and `False` singletons; it prints them into the configuration as `on` and `off` automatically.
 - lists of directives are transformed into repeated instances of the same directive. You can see this with the `include` directive in the example. This is also useful for things like `listen 80; listen 443 ssl;`.
-- indentation comes for free. I didn't indent that example by hand... the template actually does that for you. Ah, the wonders of recursion! (Sorry about the newlines before right curly braces. Haven't figured out where those are coming from yet.)
+- indentation comes for free. I didn't indent that example by hand... the template actually does that for you. Ah, the wonders of recursion!
 - to specify a deeper configuration scope (eg root -> `http` -> `server` -> `location`), just drop down into another YAML object. The root of `nginx_conf` corresponds to the root of your nginx configuration, so you can specify top-level directives like `error_log` and `events {}` just as easily as any others.
 - specify named locations with a special variable, `_name`. Any YAML key that starts with an underscore will not be emitted into the nginx configuration. We can use these keys for special purposes. For example, the name of a location, `location <name> {}`, comes from that `_name` variable.
 

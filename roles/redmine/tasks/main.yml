@@ -9,24 +9,24 @@
   file:
     path: "{{ redmine.fulldir }}"
     state: directory
-    owner: "{{ nginx_user }}"
-    group: "{{ nginx_user }}"
+    owner: "{{ redmine.user }}"
+    group: "{{ redmine.user }}"
     recurse: true
 
 - name: update database.yml
   template:
     src: database.yml.j2
     dest: "{{ redmine.fulldir }}/config/database.yml"
-    owner: "{{ nginx_user }}"
-    group: "{{ nginx_user }}"
+    owner: "{{ redmine.user }}"
+    group: "{{ redmine.user }}"
     mode: "0640"
 
 - name: copy Gemfile.lock
   copy:
     src: Gemfile.lock
     dest: "{{ redmine.fulldir }}"
-    owner: "{{ nginx_user }}"
-    group: "{{ nginx_user }}"
+    owner: "{{ redmine.user }}"
+    group: "{{ redmine.user }}"
     mode: "0640"
 
 - name: install bundle
@@ -35,7 +35,7 @@
     chdir: "{{ redmine.fulldir }}"
     creates: "{{ redmine.fulldir }}/vendor/bundle"
   sudo: true
-  sudo_user: "{{ nginx_user }}"
+  sudo_user: "{{ redmine.user }}"
 
 - name: generate secret token for sessions
   command: bundle exec rake generate_secret_token
@@ -43,7 +43,7 @@
     chdir: "{{ redmine.fulldir }}"
     creates: "{{ redmine.fulldir }}/config/initializers/secret_token.rb"
   sudo: true
-  sudo_user: "{{ nginx_user }}"
+  sudo_user: "{{ redmine.user }}"
 
 # rails migrations are (supposed to be) idempotent
 - name: migrate database schema
@@ -53,7 +53,7 @@
   args:
     chdir: "{{ redmine.fulldir }}"
   sudo: true
-  sudo_user: "{{ nginx_user }}"
+  sudo_user: "{{ redmine.user }}"
 
 # can tell if it worked based on the stdout
 - name: load default data
@@ -64,7 +64,7 @@
   args:
     chdir: "{{ redmine.fulldir }}"
   sudo: true
-  sudo_user: "{{ nginx_user }}"
+  sudo_user: "{{ redmine.user }}"
   register: redmine_load_defaults
   failed_when: "redmine_load_defaults.stdout != 'Some configuration data is already loaded.' and redmine_load_defaults.stdout != 'Default configuration data loaded.'"
   changed_when: "redmine_load_defaults.stdout != 'Some configuration data is already loaded.'"

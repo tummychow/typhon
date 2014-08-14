@@ -1,19 +1,34 @@
 # {{ ansible_managed }}
 
-worker_processes  {{ ansible_processor_count }};
-worker_rlimit_nofile {{ nginx_max_fds }};
-events {
-    worker_connections  {{ nginx_max_clients }};
-}
+{# macro to print a single key-value pair of an nginx configuration #}
+{%- macro nginx_kvp(k, v, indent) -%}
+{% if v is sameas true -%}
+{{ '    ' * indent }}{{ k }} on;
+{% elif v is sameas false -%}
+{{ '    ' * indent }}{{ k }} off;
+{% elif v is number -%}
+{{ '    ' * indent }}{{ k }} {{ v }};
+{% elif v is string -%}
+{{ '    ' * indent }}{{ k }} {{ v|trim }};
+{% elif v is mapping -%}
+{{ '    ' * indent }}{{ k }} {{ v['_name']|d('') }} {{ '{' }}
+{{ nginx_subconf(v, indent+1) }}
+{{ '    ' * indent }}{{ '}' }}
+{% elif v is sequence -%}
+{%- for e in v -%}
+{{ nginx_kvp(k, e, indent) }}
+{%- endfor -%}
+{%- endif -%}
+{%- endmacro -%}
 
-user {{ nginx_user }};
+{# macro that takes a dict of nginx configuration and prints all the kvps #}
+{%- macro nginx_subconf(config_dict, indent) -%}
+{%- for k, v in config_dict.iteritems() if k[0] != '_' -%}
+{{ nginx_kvp(k, v, indent) }}
+{%- endfor -%}
+{%- endmacro -%}
 
-http {
-    include /etc/nginx/mime.types;
-    default_type application/octet-stream;
-{% for k,v in nginx_http_params.iteritems() %}
-    {{ k }}  {{ v }};
-{% endfor %}
-
-    include /etc/nginx/conf.d/*.conf;
-}
+{%- if item is defined -%}
+{%- set nginx_conf = item -%}
+{%- endif -%}
+{{ nginx_subconf(nginx_conf, 0) }}

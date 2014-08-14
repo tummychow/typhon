@@ -8,11 +8,14 @@
       pass: redminer
       dir: /var
       fulldir: /var/redmine-2.5.2
+      user: "{{ nginx_conf.user }}"
     gollum:
       fulldir: /var/gollum
+      user: "{{ nginx_conf.user }}"
     psdash:
       dir: /var
       fulldir: /var/psdash-0.4.0
+      user: "{{ nginx_conf.user }}"
     postgresql_users:
       - name: "{{ redmine.name }}"
         pass: "{{ redmine.pass }}"
@@ -20,47 +23,49 @@
       - name: "{{ redmine.database }}"
         owner: "{{ redmine.name }}"
     nginx_sites:
-      - server:
-          file_name: default
-          server_name: "_"
-          listen: 80
+      - _filename: default
+        _enabled: false
+        server:
+          server_name: _
+          listen:
+            - 80 default_server
           return: 444
-      - server:
-          file_name: redmine
+      - _filename: redmine
+        _enabled: true
+        server:
           server_name: redmine.example.com
           listen: 80
           root: "{{ redmine.fulldir }}/public"
-          location1:
-            name: /
-            try_files: $uri $uri/index.html @passenger
-          location2:
-            name: "@passenger"
-            passenger_enabled: "on"
-      - server:
-          file_name: gollum
+          location:
+            - _name: /
+              try_files: $uri $uri/index.html @passenger
+            - _name: "@passenger"
+              passenger_enabled: on
+      - _filename: gollum
+        _enabled: true
+        server:
           server_name: gollum.example.com
           listen: 80
           root: "{{ gollum.fulldir }}/public"
-          location1:
-            name: /
-            root: "{{ gollum.fulldir }}/vendor/bundle/ruby/2.1.0/gems/gollum-3.0.0/lib/gollum/public/gollum/"
-            try_files: $uri $uri/index.html @passenger
-          location2:
-            name: "@passenger"
-            passenger_enabled: "on"
-      - server:
-          file_name: psdash
+          location:
+            - _name: /
+              root: "{{ gollum.fulldir }}/vendor/bundle/ruby/2.1.0/gems/gollum-3.0.0/lib/gollum/public/gollum/"
+              try_files: $uri $uri/index.html @passenger
+            - _name: "@passenger"
+              passenger_enabled: on
+      - _filename: psdash
+        _enabled: true
+        server:
           server_name: psdash.example.com
           listen: 80
           root: "{{ psdash.fulldir }}/public"
-          location1:
-            name: /
-            root: "{{ psdash.fulldir }}/psdash/static"
-            try_files: $uri $uri/index.html @passenger
-          location2:
-            name: "@passenger"
-            passenger_python: "{{ psdash.fulldir }}/bin/python2"
-            passenger_enabled: "on"
+          location:
+            - _name: /
+              root: "{{ psdash.fulldir }}/psdash/static"
+              try_files: $uri $uri/index.html @passenger
+            - _name: "@passenger"
+              passenger_python: "{{ psdash.fulldir }}/bin/python2"
+              passenger_enabled: on
   roles:
   - role: base
   - role: nginx

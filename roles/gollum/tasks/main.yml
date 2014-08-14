@@ -11,8 +11,8 @@
 - name: create directories
   file:
     path: "{{ item }}"
-    owner: "{{ nginx_user }}"
-    group: "{{ nginx_user }}"
+    owner: "{{ gollum.user }}"
+    group: "{{ gollum.user }}"
     state: directory
     mode: "0755"
   with_items:
@@ -25,8 +25,8 @@
   copy:
     src: "{{ item }}"
     dest: "{{ gollum.fulldir }}/{{ item }}"
-    owner: "{{ nginx_user }}"
-    group: "{{ nginx_user }}"
+    owner: "{{ gollum.user }}"
+    group: "{{ gollum.user }}"
     mode: "0640"
   with_items:
     - Gemfile
@@ -39,7 +39,7 @@
     chdir: "{{ gollum.fulldir }}/repo"
     creates: "{{ gollum.fulldir }}/repo/.git"
   sudo: true
-  sudo_user: "{{ nginx_user }}"
+  sudo_user: "{{ gollum.user }}"
 
 - name: install bundle
   command: bundle install --deployment
@@ -47,4 +47,4 @@
     chdir: "{{ gollum.fulldir }}"
     creates: "{{ gollum.fulldir }}/vendor/bundle"
   sudo: true
-  sudo_user: "{{ nginx_user }}"
+  sudo_user: "{{ gollum.user }}"

@@ -7,5 +7,5 @@ In particular this role is 100% idempotent (including Redmine rake tasks) and it
 To use the role you need some variables defined:
 
 - `redmine.dir` and `redmine.fulldir` for the place to unpack Redmine. These should be something like `/var` (the place to unarchive Redmine) and `/var/redmine-2.5.2` (the place where Redmine actually ends up once it's unpacked).
-- `nginx_user`. The owner of the Redmine files is the same as the user that nginx's workers will run as. This matches up nicely with the behavior of passenger. If you were using Unicorn or Puma, you might want to fork this off into a variable of its own (and have Redmine's Ruby workers running as their own user, which would then be reverse proxied by nginx).
+- `redmine.user`. The owner of the Redmine files is the same as the user that nginx's workers will run as. This matches up nicely with the behavior of passenger. If you were using Unicorn or Puma, you might want to fork this off into a variable of its own (and have Redmine's Ruby workers running as their own user, which would then be reverse proxied by nginx).
 - `redmine.database`, `redmine.name` and `redmine.pass`. This is the Redmine database, plus its owner's name and password.

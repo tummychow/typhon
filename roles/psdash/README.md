@@ -7,7 +7,7 @@ Before you begin, you need the psdash 0.4.0 [tarball](https://github.com/Jahaja/
 To use the role you need some variables defined:
 
 - `psdash.dir` and `psdash.fulldir` for the place to unpack psdash. These should be something like `/var` (the place to unarchive psdash) and `/var/psdash-0.4.0` (the place where psdash actually ends up once it's unpacked).
-- `nginx_user`. The owner of the psdash files is the same as the user that nginx's workers will run as. This matches up nicely with the behavior of passenger.
+- `psdash.user`. The owner of the psdash files is the same as the user that nginx's workers will run as. This matches up nicely with the behavior of passenger.
 
 The role installs psdash inside a virtualenv (installation process is idempotent - the virtualenv and setuptools commands will not be reinvoked needlessly). Passenger is then configured to use the virtualenv's python, rather than the global one. I've provided the `passenger_wsgi.py` that teaches Passenger how to serve this application. If you are serving other Flask applications, you might want to take a look at this `passenger_wsgi.py` as a guideline for your own stuff.
 

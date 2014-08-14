@@ -9,15 +9,15 @@
   file:
     path: "{{ psdash.fulldir }}"
     state: directory
-    owner: "{{ nginx_user }}"
-    group: "{{ nginx_user }}"
+    owner: "{{ psdash.user }}"
+    group: "{{ psdash.user }}"
     recurse: true
 
 - name: create directories
   file:
     path: "{{ item }}"
-    owner: "{{ nginx_user }}"
-    group: "{{ nginx_user }}"
+    owner: "{{ psdash.user }}"
+    group: "{{ psdash.user }}"
     state: directory
     mode: "0755"
   with_items:
@@ -28,8 +28,8 @@
   copy:
     src: passenger_wsgi.py
     dest: "{{ psdash.fulldir }}"
-    owner: "{{ nginx_user }}"
-    group: "{{ nginx_user }}"
+    owner: "{{ psdash.user }}"
+    group: "{{ psdash.user }}"
     mode: "0640"
 
 - name: create virtualenv
@@ -37,7 +37,7 @@
   args:
     creates: "{{ psdash.fulldir }}/bin/python2"
   sudo: true
-  sudo_user: "{{ nginx_user }}"
+  sudo_user: "{{ psdash.user }}"
 
 - name: install env
   command: "bin/python2 setup.py install"
@@ -45,4 +45,4 @@
     creates: "{{ psdash.fulldir }}/lib/python2.7/site-packages/psdash-0.4.0-py2.7.egg"
     chdir: "{{ psdash.fulldir }}"
   sudo: true
-  sudo_user: "{{ nginx_user }}"
+  sudo_user: "{{ psdash.user }}"

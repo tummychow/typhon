@@ -1,9 +1,8 @@
 ---
-- name: unpack
-  unarchive:
-    src: v0.4.0.tar.gz
-    dest: "{{ psdash.dir }}"
-    creates: "{{ psdash.fulldir }}"
+- name: clone
+  git:
+    repo: https://github.com/Jahaja/psdash
+    dest: "{{ psdash.fulldir }}"
 
 - name: set permissions
   file:

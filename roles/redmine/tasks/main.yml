@@ -1,9 +1,8 @@
 ---
-- name: unpack
-  unarchive:
-    src: redmine-2.5.2.tar.gz
-    dest: "{{ redmine.dir }}"
-    creates: "{{ redmine.fulldir }}"
+- name: checkout
+  subversion:
+    repo: https://svn.redmine.org/redmine/branches/2.5-stable
+    dest: "{{ redmine.fulldir }}"
 
 - name: set permissions
   file:

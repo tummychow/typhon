@@ -6,14 +6,12 @@
       database: redmine_db
       name: redminer
       pass: redminer
-      dir: /var
-      fulldir: /var/redmine-2.5.2
+      fulldir: /var/redmine-2.5
       user: "{{ nginx_conf.user }}"
     gollum:
       fulldir: /var/gollum
       user: "{{ nginx_conf.user }}"
     psdash:
-      dir: /var
       fulldir: /var/psdash-0.4.0
       user: "{{ nginx_conf.user }}"
     postgresql_users:

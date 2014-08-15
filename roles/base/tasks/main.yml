@@ -51,3 +51,13 @@
   with_items:
     - python2-setuptools
     - python2-virtualenv
+
+- name: install version control systems
+  pacman:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - git
+    - bzr
+    - mercurial
+    - subversion

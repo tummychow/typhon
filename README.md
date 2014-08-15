@@ -11,7 +11,7 @@ An Ansible playbook to install some stuff. The target is an Arch Linux system wi
 ## Steps
 
 1. change hosts.ini to contain your hosts as needed.
-2. get the various tarballs you need to actually run the playbook (Redmine 2.5.2 tarball, psdash tarball, nginx-passenger compiled package tarball). See the READMEs under each role for more information.
+2. get the various tarballs you need to actually run the playbook (mainly a tarball for nginx-passenger). See the READMEs under each role for more information.
 3. run ansible-playbook on the target
 
 ## License

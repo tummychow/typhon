@@ -3,6 +3,7 @@
   git:
     repo: https://github.com/Jahaja/psdash
     dest: "{{ psdash.fulldir }}"
+    version: v0.4.0
 
 - name: set permissions
   file:

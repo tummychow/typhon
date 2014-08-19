@@ -47,7 +47,7 @@
           root: "{{ gollum.fulldir }}/public"
           location:
             - _name: /
-              root: "{{ gollum.fulldir }}/vendor/bundle/ruby/2.1.0/gems/gollum-3.0.0/lib/gollum/public/gollum/"
+              root: "{{ gollum.fulldir }}/vendor/bundle/ruby/2.1.0/gems/gollum-3.0.0/lib/gollum/public/gollum"
               try_files: $uri $uri/index.html @passenger
             - _name: "@passenger"
               passenger_enabled: on

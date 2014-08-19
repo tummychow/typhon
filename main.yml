@@ -14,12 +14,24 @@
     psdash:
       fulldir: /var/psdash-0.4.0
       user: "{{ nginx_conf.user }}"
+    stringer:
+      database: stringer_db
+      name: stringerer
+      pass: stringerer
+      frequency: 8h
+      token: iamnotasecret
+      fulldir: /var/stringer
+      user: "{{ nginx_conf.user }}"
     postgresql_users:
       - name: "{{ redmine.name }}"
         pass: "{{ redmine.pass }}"
+      - name: "{{ stringer.name }}"
+        pass: "{{ stringer.pass }}"
     postgresql_databases:
       - name: "{{ redmine.database }}"
         owner: "{{ redmine.name }}"
+      - name: "{{ stringer.database }}"
+        owner: "{{ stringer.name }}"
     nginx_sites:
       - _filename: default
         _enabled: false
@@ -64,6 +76,23 @@
             - _name: "@passenger"
               passenger_python: "{{ psdash.fulldir }}/bin/python2"
               passenger_enabled: on
+      - _filename: stringer
+        _enabled: true
+        server:
+          server_name: stringer.example.com
+          listen: 80
+          root: "{{ stringer.fulldir }}/public"
+          location:
+            - _name: /
+              root: "{{ stringer.fulldir }}/app/public"
+              try_files: $uri $uri/index.html @passenger
+            - _name: "@passenger"
+              passenger_enabled: on
+              passenger_set_cgi_param:
+                - "STRINGER_DATABASE {{ stringer.database }}"
+                - "STRINGER_DATABASE_USERNAME {{ stringer.name }}"
+                - "STRINGER_DATABASE_PASSWORD {{ stringer.pass }}"
+                - "SECRET_TOKEN {{ stringer.token }}"
   roles:
   - role: base
   - role: nginx
@@ -71,3 +100,4 @@
   - role: redmine
   - role: gollum
   - role: psdash
+  - role: stringer

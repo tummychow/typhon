@@ -7,6 +7,7 @@ An Ansible playbook to install some stuff. The target is an Arch Linux system wi
 - [redmine](http://www.redmine.org) running on the postgresql backend
 - [gollum](https://github.com/gollum/gollum)
 - [psdash](https://github.com/jahaja/psdash)
+- [stringer](https://github.com/swanson/stringer)
 
 ## Steps
 

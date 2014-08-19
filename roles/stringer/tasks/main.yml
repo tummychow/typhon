@@ -1,0 +1,57 @@
+---
+- name: clone
+  git:
+    repo: https://github.com/swanson/stringer
+    dest: "{{ stringer.fulldir }}"
+    version: 7525457924803ce702095dab3d2da63ab21aa64f
+
+- name: set permissions
+  file:
+    path: "{{ stringer.fulldir }}"
+    state: directory
+    owner: "{{ stringer.user }}"
+    group: "{{ stringer.user }}"
+    recurse: true
+
+- name: remove ruby version restriction
+  lineinfile:
+    dest: "{{ stringer.fulldir }}/Gemfile"
+    regexp: '^ruby "2\.0\.0"$'
+    state: absent
+
+- name: install bundle
+  command: bundle install --deployment --without development test unicorn
+  args:
+    chdir: "{{ stringer.fulldir }}"
+    creates: "{{ stringer.fulldir }}/vendor/bundle"
+  sudo: true
+  sudo_user: "{{ stringer.user }}"
+
+- name: migrate database schema
+  command: bundle exec rake db:migrate
+  environment:
+    RACK_ENV: production
+    STRINGER_DATABASE: "{{ stringer.database }}"
+    STRINGER_DATABASE_USERNAME: "{{ stringer.name }}"
+    STRINGER_DATABASE_PASSWORD: "{{ stringer.pass }}"
+  args:
+    chdir: "{{ stringer.fulldir }}"
+  sudo: true
+  sudo_user: "{{ stringer.user }}"
+
+- name: install systemd units
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/systemd/system/{{ item }}"
+    owner: root
+    group: root
+    mode: "0644"
+  with_items:
+    - stringer-fetch-feeds.service
+    - stringer-fetch-feeds.timer
+
+- name: start and enable fetch_feeds timer
+  service:
+    name: stringer-fetch-feeds.timer
+    state: started
+    enabled: true

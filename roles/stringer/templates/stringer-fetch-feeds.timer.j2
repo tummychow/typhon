@@ -1,0 +1,14 @@
+[Unit]
+Description=stringer fetch_feeds timer
+
+[Timer]
+# make sure the timer fires when the system boots
+OnBootSec=5m
+# and when it is first started
+OnActiveSec=5m
+
+OnUnitActiveSec={{ stringer.frequency }}
+Persistent=true
+
+[Install]
+WantedBy=timers.target

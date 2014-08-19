@@ -1,0 +1,13 @@
+[Unit]
+Description=stringer fetch_feeds rake task
+Requires=postgresql.service
+After=postgresql.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=no
+
+User={{ stringer.user }}
+WorkingDirectory={{ stringer.fulldir }}
+Environment="RACK_ENV=production"
+ExecStart=/usr/bin/bundle exec rake fetch_feeds

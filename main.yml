@@ -76,6 +76,8 @@
             - _name: "@passenger"
               passenger_python: "{{ psdash.fulldir }}/bin/python2"
               passenger_enabled: on
+              passenger_set_cgi_param:
+                - "PYTHON_EGG_CACHE {{ psdash.fulldir }}/tmp"
       - _filename: stringer
         _enabled: true
         server:

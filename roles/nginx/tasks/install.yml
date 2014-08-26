@@ -1,7 +1,7 @@
 ---
 - name: copy package
   copy:
-    src: "nginx-passenger/nginx-passenger-1.6.0-4-{{ pacman_architecture }}.pkg.tar.xz"
+    src: "nginx-passenger/nginx-passenger-1.6.1-1-{{ pacman_architecture }}.pkg.tar.xz"
     dest: /root
     owner: root
     group: root
@@ -10,6 +10,6 @@
 
 - name: install
   pacman:
-    name: "/root/nginx-passenger-1.6.0-4-{{ pacman_architecture }}.pkg.tar.xz"
+    name: "/root/nginx-passenger-1.6.1-1-{{ pacman_architecture }}.pkg.tar.xz"
     state: present
   when: nginx_copy_package.changed

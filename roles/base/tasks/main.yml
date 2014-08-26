@@ -44,12 +44,12 @@
     state: latest
     user_install: false
 
-- name: install setuptools and virtualenv (python2)
+- name: install pip and virtualenv (python2)
   pacman:
     name: "{{ item }}"
     state: present
   with_items:
-    - python2-setuptools
+    - python2-pip
     - python2-virtualenv
 
 - name: install version control systems

@@ -1,6 +1,3 @@
-import os
-import os.path
-
 from psdash.run import PsDashRunner
 application = PsDashRunner.create_from_args().app
 

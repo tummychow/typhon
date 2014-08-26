@@ -71,7 +71,7 @@
           root: "{{ psdash.fulldir }}/public"
           location:
             - _name: /
-              root: "{{ psdash.fulldir }}/psdash/static"
+              root: "{{ psdash.fulldir }}/lib/python2.7/site-packages/psdash/static"
               try_files: $uri $uri/index.html @passenger
             - _name: "@passenger"
               passenger_python: "{{ psdash.fulldir }}/bin/python2"

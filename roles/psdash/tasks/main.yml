@@ -1,9 +1,12 @@
 ---
-- name: clone
-  git:
-    repo: https://github.com/Jahaja/psdash
-    dest: "{{ psdash.fulldir }}"
-    version: v0.4.0
+- name: pip install
+  pip:
+    name: psdash
+    version: 0.4.0
+    state: present
+    virtualenv: "{{ psdash.fulldir }}"
+    executable: pip2
+    virtualenv_command: virtualenv2
 
 - name: set permissions
   file:
@@ -31,18 +34,3 @@
     owner: "{{ psdash.user }}"
     group: "{{ psdash.user }}"
     mode: "0640"
-
-- name: create virtualenv
-  command: "virtualenv2 {{ psdash.fulldir }}"
-  args:
-    creates: "{{ psdash.fulldir }}/bin/python2"
-  sudo: true
-  sudo_user: "{{ psdash.user }}"
-
-- name: install env
-  command: "bin/python2 setup.py install"
-  args:
-    creates: "{{ psdash.fulldir }}/lib/python2.7/site-packages/psdash-0.4.0-py2.7.egg"
-    chdir: "{{ psdash.fulldir }}"
-  sudo: true
-  sudo_user: "{{ psdash.user }}"

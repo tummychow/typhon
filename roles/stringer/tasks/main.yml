@@ -13,6 +13,17 @@
     group: "{{ stringer.user }}"
     recurse: true
 
+- name: create directories
+  file:
+    path: "{{ item }}"
+    owner: "{{ stringer.user }}"
+    group: "{{ stringer.user }}"
+    state: directory
+    mode: "0755"
+  with_items:
+    - "{{ stringer.fulldir }}/public"
+    - "{{ stringer.fulldir }}/tmp"
+
 - name: remove ruby version restriction
   lineinfile:
     dest: "{{ stringer.fulldir }}/Gemfile"
